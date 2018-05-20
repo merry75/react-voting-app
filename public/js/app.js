@@ -1,12 +1,14 @@
 class ProductList extends React.Component {
 
-	constructor(props) {
-	super(props);
-	this.state = {
-	products: [],
-	};
+	constructor(props) {		
+		super(props);
+		this.state = {
+		products: [],
+		};
 
-	this.handleProductUpVote = this.handleProductUpVote.bind(this);
+		this.handleProductUpVote = this.handleProductUpVote.bind(this);
+
+		this.handleProductDownVote = this.handleProductDownVote.bind(this);
 	}
 
 	componentDidMount() {
@@ -14,12 +16,29 @@ class ProductList extends React.Component {
 	}
 
 	handleProductUpVote(productId) {
-	console.log(productId + ' was upvoted.');
+		console.log(productId + ' was upvoted.');
+
+		const nextProducts = this.state.products.map((product) => {
+		if (product.id === productId) {
+		return Object.assign({}, product, {
+		votes: product.votes + 1,
+		});
+		} else {
+		return product;
+		}
+		});
+		this.setState({
+		products: nextProducts,
+		});
+	}
+
+	handleProductDownVote(productId) {
+	console.log(productId + ' was downvoted.');
 
 	const nextProducts = this.state.products.map((product) => {
 	if (product.id === productId) {
 	return Object.assign({}, product, {
-	votes: product.votes + 1,
+	votes: product.votes - 1,
 	});
 	} else {
 	return product;
@@ -51,6 +70,7 @@ render() {
 			submitterAvatarUrl={product.submitterAvatarUrl}
 			productImageUrl={product.productImageUrl}
 			onVote={this.handleProductUpVote}
+			downVote={this.handleProductDownVote}
 		 />
 		 )
 	 ) ;
@@ -67,10 +87,15 @@ class Product extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleUpVote = this.handleUpVote.bind(this);
+		this.handleDownVote = this.handleDownVote.bind(this);
 	}
 
 	handleUpVote() {
 	this.props.onVote(this.props.id);
+	}
+
+	handleDownVote() {
+	this.props.downVote(this.props.id);
 	}
 
 	render() {
@@ -85,6 +110,9 @@ class Product extends React.Component {
 					<div className='header'>
 					<a onClick={this.handleUpVote}>
 					<i className='large caret up icon' />
+					</a>
+					<a onClick={this.handleDownVote}>
+					<i className='large caret down icon' />
 					</a>
 					{this.props.votes}
 					</div>					
